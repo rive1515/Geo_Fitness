@@ -39,7 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MapboxAccountManager.start(this, "pk.eyJ1Ijoicml2ZTE1MTUiLCJhIjoiY2pkbG0wODF6MGE2dDJxcWk1NW5mbGt4OSJ9.k2d6hhc4cczzz6ynmdLO6Q");
+     //   MapboxAccountManager.start(this, "pk.eyJ1Ijoicml2ZTE1MTUiLCJhIjoiY2pkbG0wODF6MGE2dDJxcWk1NW5mbGt4OSJ9.k2d6hhc4cczzz6ynmdLO6Q");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -73,13 +73,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        // Add a marker in Sydney and move the camera
         LatLng origen = new LatLng(latitud, longitud);
         LatLng destino = new LatLng(39.387133, -3.216995);
-        mMap.addMarker(new MarkerOptions().position(origen).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(origen));
+
 
         try {
             obtenerRuta(origen, destino);
-        } catch (ServicesException e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            mMap.addMarker(new MarkerOptions().position(origen).title("Marker in Sydney"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(origen));
         }
     }
 
