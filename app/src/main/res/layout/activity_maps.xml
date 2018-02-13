@@ -1,8 +1,21 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
-    tools:context="com.example.jesusjaviermuela.geofitness.MapsActivity" />
+    android:layout_height="match_parent"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="com.example.jesusjaviermuela.geofitness.MapsActivity">
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapaView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        mapbox:center_latitude="39.387133"
+        mapbox:center_longitude="-3.216995"
+        mapbox:zoom="14"
+        mapbox:style_url="@string/style_mapbox_streets">
+    </com.mapbox.mapboxsdk.maps.MapView>
+</RelativeLayout>

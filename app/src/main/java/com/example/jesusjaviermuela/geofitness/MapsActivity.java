@@ -4,18 +4,19 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationServices;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.services.Constants;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.geojson.LineString;
@@ -32,18 +33,21 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity{
+    private MapView mapaView;
+    private MapboxMap mapa;
+    private FloatingActionButton btUbicacion;
+    private LocationServices servicioUbicacion;
     private double latitud;
     private double longitud;
-    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-     //   MapboxAccountManager.start(this, "pk.eyJ1Ijoicml2ZTE1MTUiLCJhIjoiY2pkbG0wODF6MGE2dDJxcWk1NW5mbGt4OSJ9.k2d6hhc4cczzz6ynmdLO6Q");
+        MapboxAccountManager.start(this, "pk.eyJ1Ijoicml2ZTE1MTUiLCJhIjoiY2pkbHV0M3I0MGNnYjJ3amd5OTNhdTBzeSJ9.zAdn6OsJ0nDdampdV50TGw");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+    /*    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -52,8 +56,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         latitud = intent.getDoubleExtra("latitud",0);
         longitud = intent.getDoubleExtra("longitud", 0);
 
+*/
+        mapaView = (MapView) findViewById(R.id.mapaView);
+        mapaView.onCreate(savedInstanceState);
 
 
+
+        Intent intent = getIntent();
+        latitud = intent.getDoubleExtra("latitud",0);
+        longitud = intent.getDoubleExtra("longitud", 0);
+
+        mapaView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(MapboxMap mapboxMap) {
+                mapa = mapboxMap;
+                LatLng origen = new LatLng(latitud, longitud);
+                LatLng destino = new LatLng(39.387133, -3.216995);
+
+
+                try {
+                    obtenerRuta(origen, destino);
+                } catch (Exception ex) {
+
+                }
+            }
+        });
     }
 
 
@@ -66,33 +93,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-//        // Add a marker in Sydney and move the camera
-        LatLng origen = new LatLng(latitud, longitud);
-        LatLng destino = new LatLng(39.387133, -3.216995);
-
-
-        try {
-            obtenerRuta(origen, destino);
-        } catch (Exception ex) {
-            mMap.addMarker(new MarkerOptions().position(origen).title("Marker in Sydney"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(origen));
-        }
-    }
 
 
     public void obtenerRuta(LatLng origen, LatLng destino) throws ServicesException {
 
-        Position posicionOrigen = Position.fromCoordinates(origen.longitude, origen.latitude);
-        Position posicionDestino = Position.fromCoordinates(destino.longitude,destino.latitude);
+        Position posicionOrigen = Position.fromCoordinates(origen.getLongitude(), origen.getLatitude());
+        Position posicionDestino = Position.fromCoordinates(destino.getLongitude(),destino.getLatitude());
 
         MapboxDirections direccion = new MapboxDirections.Builder()
                 .setOrigin(posicionOrigen)
                 .setDestination(posicionDestino)
-                .setProfile(DirectionsCriteria.PROFILE_WALKING)
+                .setProfile(DirectionsCriteria.PROFILE_DRIVING)
                 .setAccessToken(MapboxAccountManager.getInstance().getAccessToken())
                 .build();
 
@@ -127,11 +138,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             puntos[i] = new LatLng(coordenadas.get(i).getLatitude(), coordenadas.get(i).getLongitude());
         }
 
-        mMap.addPolyline(new PolylineOptions().add(puntos)
+        mapa.addPolyline(new PolylineOptions().add(puntos)
                 .color(Color.parseColor("#009688")).width(5));
 
-        if(!mMap.isMyLocationEnabled()){
-            mMap.setMyLocationEnabled(true);
+        mapa.setMyLocationEnabled(true);
+        if(!mapa.isMyLocationEnabled()){
+            mapa.setMyLocationEnabled(true);
         }
     }
 }

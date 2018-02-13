@@ -1,6 +1,7 @@
 package com.example.jesusjaviermuela.geofitness;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.commons.ServicesException;
 
 import java.util.ArrayList;
@@ -20,9 +22,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     LocationListener locationListener;
     LocationManager locationManager;
-    double latitud;
-    double longitud;
-    Location ultimaLocalizacion;
+    double latitud, latitudInicial;
+    double longitud, longitudInicial;
+    Location localizacionInicial;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +44,23 @@ public class MainActivity extends AppCompatActivity {
 
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
+            @SuppressLint("MissingPermission")
             @Override
             public void onLocationChanged(Location location) {
+       /*         LatLng origen = new LatLng(latitudInicial, longitudInicial);
 
+                latitud =  location.getLatitude();
+                longitud = location.getLongitude();
+
+                LatLng destino = new LatLng(latitud, longitud);
+
+                MapsActivity mapsActivity = new MapsActivity();
+                try {
+                    mapsActivity.obtenerRuta(origen, destino);
+                } catch (ServicesException e) {
+                    e.printStackTrace();
+                }
+                */
             }
 
             @Override
@@ -71,20 +87,20 @@ public class MainActivity extends AppCompatActivity {
             x++;
         }
 
-        while(ultimaLocalizacion == null){
+        while(localizacionInicial == null){
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, locationListener);
-            ultimaLocalizacion = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            localizacionInicial = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             //  ultimaLocalizacion = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (ultimaLocalizacion != null){
-                latitud =  ultimaLocalizacion.getLatitude();
-                longitud = ultimaLocalizacion.getLongitude();
+            if (localizacionInicial != null){
+                latitudInicial =  localizacionInicial.getLatitude();
+                longitudInicial = localizacionInicial.getLongitude();
             }
         }
 
 
         Intent mapsIntent = new Intent(MainActivity.this, MapsActivity.class);
-        mapsIntent.putExtra("latitud", latitud);
-        mapsIntent.putExtra("longitud", longitud);
+        mapsIntent.putExtra("latitud", latitudInicial);
+        mapsIntent.putExtra("longitud", longitudInicial);
         startActivity(mapsIntent);
     }
 }
