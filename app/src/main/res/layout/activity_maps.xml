@@ -12,7 +12,7 @@
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapaView"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="325dp"
         mapbox:center_latitude="39.387133"
         mapbox:center_longitude="-3.216995"
         mapbox:zoom="14"

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationServices;
@@ -43,7 +45,7 @@ public class MapsActivity extends FragmentActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MapboxAccountManager.start(this, "pk.eyJ1Ijoicml2ZTE1MTUiLCJhIjoiY2pkbHV0M3I0MGNnYjJ3amd5OTNhdTBzeSJ9.zAdn6OsJ0nDdampdV50TGw");
+        MapboxAccountManager.start(this, "pk.eyJ1Ijoicml2ZTE1MTUiLCJhIjoiY2pkcG9rN3JpMDVnYzMzcGg3eGZweW52cCJ9.w0LoDP4EZ72cwcFxtF9eNQ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -70,15 +72,20 @@ public class MapsActivity extends FragmentActivity{
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 mapa = mapboxMap;
-                LatLng origen = new LatLng(latitud, longitud);
-                LatLng destino = new LatLng(39.387133, -3.216995);
-
-
-                try {
-                    obtenerRuta(origen, destino);
-                } catch (Exception ex) {
-
-                }
+//                Location origen = new Location(LocationManager.GPS_PROVIDER);
+//                origen.setLatitude(latitud);
+//                origen.setLongitude(longitud);
+//                Location destino = new Location(LocationManager.GPS_PROVIDER);
+//                destino.setLongitude(-3.216995);
+//                destino.setLatitude(39.387133);
+//
+//
+//
+//                try {
+//                    obtenerRuta(origen, destino);
+//                } catch (Exception ex) {
+//
+//                }
             }
         });
     }
@@ -95,7 +102,7 @@ public class MapsActivity extends FragmentActivity{
      */
 
 
-    public void obtenerRuta(LatLng origen, LatLng destino) throws ServicesException {
+    public void obtenerRuta(Location origen, Location destino) throws ServicesException {
 
         Position posicionOrigen = Position.fromCoordinates(origen.getLongitude(), origen.getLatitude());
         Position posicionDestino = Position.fromCoordinates(destino.getLongitude(),destino.getLatitude());
@@ -111,7 +118,7 @@ public class MapsActivity extends FragmentActivity{
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                 DirectionsRoute ruta = response.body().getRoutes().get(0);
-                Toast.makeText(MapsActivity.this, "Distancia: " + ruta.getDistance() + " metros", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MapsActivity.this, "Distancia: " + ruta.getDistance() + " metros", Toast.LENGTH_SHORT).show();
 
                 pintarRuta(ruta);
             }
@@ -137,6 +144,7 @@ public class MapsActivity extends FragmentActivity{
         for (int i = 0; i <coordenadas.size(); i++){
             puntos[i] = new LatLng(coordenadas.get(i).getLatitude(), coordenadas.get(i).getLongitude());
         }
+
 
         mapa.addPolyline(new PolylineOptions().add(puntos)
                 .color(Color.parseColor("#009688")).width(5));

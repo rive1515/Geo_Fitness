@@ -31,36 +31,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
-        if(Build.VERSION.SDK_INT >= 23){
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                //si no lo tenemos lo pedimos
-                ActivityCompat.requestPermissions(this,
-                        new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-            }
-
-        }
-
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @SuppressLint("MissingPermission")
             @Override
             public void onLocationChanged(Location location) {
-       /*         LatLng origen = new LatLng(latitudInicial, longitudInicial);
-
-                latitud =  location.getLatitude();
-                longitud = location.getLongitude();
-
-                LatLng destino = new LatLng(latitud, longitud);
-
+                Location origen = new Location(LocationManager.GPS_PROVIDER);
+                origen.setLatitude(latitudInicial);
+                origen.setLongitude(longitudInicial);
                 MapsActivity mapsActivity = new MapsActivity();
                 try {
-                    mapsActivity.obtenerRuta(origen, destino);
+                    mapsActivity.obtenerRuta(origen , location);
                 } catch (ServicesException e) {
                     e.printStackTrace();
                 }
-                */
+
+                System.out.println(location.toString());
             }
 
             @Override
@@ -79,6 +65,15 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        if(Build.VERSION.SDK_INT >= 23){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                //si no lo tenemos lo pedimos
+                ActivityCompat.requestPermissions(this,
+                        new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+            }
+
+        }
 
         ArrayList listaProveedores = (ArrayList) locationManager.getProviders(true);
         int x = 0;
@@ -87,8 +82,10 @@ public class MainActivity extends AppCompatActivity {
             x++;
         }
 
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, locationListener);
+
         while(localizacionInicial == null){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, locationListener);
+
             localizacionInicial = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             //  ultimaLocalizacion = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (localizacionInicial != null){
@@ -103,4 +100,5 @@ public class MainActivity extends AppCompatActivity {
         mapsIntent.putExtra("longitud", longitudInicial);
         startActivity(mapsIntent);
     }
+
 }
